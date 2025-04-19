@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Dosyası Bölme Aracı</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --primary-dark: #2980b9;
+            --secondary-color: #2c3e50;
+            --light-bg: #f9f9f9;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f5f5f5;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        
+        main {
+            flex: 1 0 auto;
+            padding: 20px;
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--secondary-color);
+            margin-bottom: 20px;
+            font-size: 2.2rem;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--box-shadow);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+        
+        .container:hover {
+            transform: translateY(-5px);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+        
+        input[type="file"], input[type="number"] {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        input[type="file"]:hover, input[type="number"]:hover {
+            border-color: var(--primary-color);
+        }
+        
+        button {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            display: block;
+            width: 100%;
+            font-weight: 600;
+            transition: background-color 0.3s, transform 0.2s;
+            margin-top: 20px;
+        }
+        
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        #status {
+            margin-top: 25px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-left: 4px solid var(--primary-color);
+            border-radius: 4px;
+            display: none;
+        }
+        
+        progress {
+            width: 100%;
+            height: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        progress::-webkit-progress-bar {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+        }
+        
+        progress::-webkit-progress-value {
+            background-color: var(--primary-color);
+            border-radius: 10px;
+        }
+        
+        .description {
+            margin-bottom: 25px;
+            text-align: center;
+            color: #555;
+            font-size: 1.1rem;
+        }
+        
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+        
+        .file-input-label {
+            display: block;
+            padding: 12px;
+            background-color: var(--light-bg);
+            border: 1px dashed #ccc;
+            border-radius: var(--border-radius);
+            text-align: center;
+            cursor: pointer;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .file-input-label:hover {
+            background-color: #eaeaea;
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+        
+        .file-input-label i {
+            margin-right: 8px;
+        }
+        
+        #fileNameDisplay {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+            text-align: center;
+            word-break: break-all;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+            margin-top: 40px;
+        }
+        
+        .author-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        
+        .author-link:hover {
+            color: #1abc9c;
+            text-decoration: underline;
+        }
+        
+        .github-icon {
+            margin-left: 5px;
+            font-size: 1.2rem;
+            vertical-align: middle;
+        }
+        
+        /* Responsive düzenlemeler */
+        @media (max-width: 768px) {
+            main {
+                padding: 15px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            button {
+                padding: 12px 16px;
+            }
+            
+            .description {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>SQL Dosyası Bölme Aracı</h1>
+        <p class="description">Bu araç, büyük SQL dosyalarını daha küçük parçalara bölerek phpMyAdmin gibi araçlara daha kolay yükleme yapmanızı sağlar. SQL ifadelerinin bütünlüğünü korur.</p>
+        
+        <div class="container">
+            <div class="form-group">
+                <label for="sqlFile">SQL Dosyası Seçin:</label>
+                <div class="file-input-wrapper">
+                    <label for="sqlFile" class="file-input-label">
+                        <i class="fas fa-file-upload"></i> Dosya Seçin veya Sürükleyin
+                    </label>
+                    <input type="file" id="sqlFile" accept=".sql" style="display: none;">
+                </div>
+                <div id="fileNameDisplay"></div>
+            </div>
+            
+            <div class="form-group">
+                <label for="partCount">Kaç Parçaya Bölünsün:</label>
+                <input type="number" id="partCount" min="2" max="10" value="3">
+                <p class="description">SQL Dosyanızın kaç parçaya bölüneceğini belirtin (2-10 arası)</p>
+            </div>
+            
+            <button id="splitButton"><i class="fas fa-cut"></i> Dosyayı Böl</button>
+            
+            <div id="status">
+                <div id="statusText">İşlem başlatılıyor...</div>
+                <progress id="progressBar" value="0" max="100"></progress>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        <p>Geliştirici: <a href="https://github.com/AzelWasHere" target="_blank" class="author-link">Azel <i class="fab fa-github github-icon"></i></a></p>
+    </footer>
+    
+    <script>
+        // Dosya adı görüntüleme 
+        document.getElementById('sqlFile').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : '';
+            document.getElementById('fileNameDisplay').textContent = fileName;
+        });
+        
+        document.getElementById('splitButton').addEventListener('click', splitSqlFile);
+        
+        async function splitSqlFile() {
+            const fileInput = document.getElementById('sqlFile');
+            const partCount = parseInt(document.getElementById('partCount').value);
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            const progressBar = document.getElementById('progressBar');
+            
+            // Dosya ve parça sayısı kontrolü
+            if (!fileInput.files || fileInput.files.length === 0) {
+                alert('Lütfen bir SQL dosyası seçin!');
+                return;
+            }
+            
+            if (partCount < 2 || partCount > 10) {
+                alert('Parça sayısı 2-10 arasında olmalıdır!');
+                return;
+            }
+            
+            const file = fileInput.files[0];
+            statusDiv.style.display = 'block';
+            statusText.textContent = 'Dosya okunuyor...';
+            
+            try {
+                // Dosya boyutu kontrolü
+                if (file.size > 1024 * 1024 * 1024) { // 1GB'dan büyük
+                    statusText.textContent = 'Uyarı: Dosya çok büyük, işlem uzun sürebilir ve tarayıcı donabilir!';
+                    await new Promise(resolve => setTimeout(resolve, 2000)); // Kullanıcıya uyarıyı okuma süresi
+                }
+                
+                // Dosyayı oku
+                const fileContent = await readFile(file, progressBar);
+                statusText.textContent = 'Dosya okundu, bölünüyor...';
+                
+                // Dosyayı böl
+                const parts = splitFile(fileContent, partCount);
+                
+                // Parçaları indirme
+                for (let i = 0; i < parts.length; i++) {
+                    progressBar.value = (i / parts.length) * 100;
+                    statusText.textContent = `${i + 1}/${parts.length} parça indiriliyor...`;
+                    
+                    // Parçayı indir
+                    const fileName = file.name.replace('.sql', `_part${i + 1}.sql`);
+                    downloadBlob(parts[i], fileName);
+                    
+                    // Parçalar arasında kısa bir bekleme
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                progressBar.value = 100;
+                statusText.textContent = 'Tüm parçalar başarıyla indirildi!';
+                
+            } catch (error) {
+                statusText.textContent = `Hata: ${error.message}`;
+                console.error(error);
+            }
+        }
+        
+        // Dosyayı okuma fonksiyonu
+        function readFile(file, progressBar) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                
+                reader.onprogress = (event) => {
+                    if (event.lengthComputable) {
+                        const percentLoaded = Math.round((event.loaded / event.total) * 100);
+                        progressBar.value = percentLoaded;
+                    }
+                };
+                
+                reader.onload = (event) => {
+                    resolve(new Uint8Array(event.target.result));
+                };
+                
+                reader.onerror = () => {
+                    reject(new Error('Dosya okuma hatası!'));
+                };
+                
+                reader.readAsArrayBuffer(file);
+            });
+        }
+        
+        // Dosyayı bölen fonksiyon
+        function splitFile(content, partCount) {
+            const parts = [];
+            const partSize = Math.ceil(content.length / partCount);
+            
+            for (let i = 0; i < partCount; i++) {
+                const startPos = i * partSize;
+                let endPos = (i + 1) * partSize;
+                
+                // Son parça değilse, SQL ifadesinin sonuna kadar git
+                if (i < partCount - 1) {
+                    // ';' karakterini ara, 1000 bayt boyunca
+                    const searchLimit = Math.min(endPos + 1000, content.length);
+                    for (let j = endPos; j < searchLimit; j++) {
+                        if (content[j] === 59) { // ';' karakteri (ASCII 59)
+                            endPos = j + 1;
+                            break;
+                        }
+                    }
+                } else {
+                    // Son parça
+                    endPos = content.length;
+                }
+                
+                // Parçayı oluştur
+                const part = content.slice(startPos, endPos);
+                parts.push(part);
+            }
+            
+            return parts;
+        }
+        
+        // Dosyayı indirme fonksiyonu
+        function downloadBlob(content, fileName) {
+            const blob = new Blob([content], { type: 'application/sql' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            a.style.display = 'none';
+            
+            document.body.appendChild(a);
+            a.click();
+            
+            // Temizlik
+            setTimeout(() => {
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }, 100);
+        }
+        
+        // Sürükle bırak desteği
+        const dropZone = document.querySelector('.file-input-label');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+        
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+        
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+        
+        function highlight() {
+            dropZone.style.backgroundColor = '#e3f2fd';
+            dropZone.style.borderColor = '#2196f3';
+        }
+        
+        function unhighlight() {
+            dropZone.style.backgroundColor = '';
+            dropZone.style.borderColor = '';
+        }
+        
+        dropZone.addEventListener('drop', handleDrop, false);
+        
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+            
+            if (files.length > 0 && files[0].name.endsWith('.sql')) {
+                document.getElementById('sqlFile').files = files;
+                document.getElementById('fileNameDisplay').textContent = files[0].name;
+            } else if (files.length > 0) {
+                alert('Lütfen sadece .sql uzantılı dosya seçin!');
+            }
+        }
+    </script>
+</body>
+</html> 
